@@ -46,6 +46,19 @@
 
 char hsts_host[64] = "router-sh.ptpt52.com";
 
+#define HSTS_RSP_FMT "" \
+		"HTTP/1.1 307 Internal Redirect\r\n" \
+		"Connection: close\r\n" \
+		"Cache-Control: no-cache\r\n" \
+		"Content-Type: text/html; charset=UTF-8\r\n" \
+		"Location: https://%s/\r\n" \
+		"Content-Security-Policy: upgrade-insecure-requests\r\n" \
+		"Strict-Transport-Security: max-age=31536000; includeSubDomains\r\n" \
+		"Content-Length: 0\r\n" \
+		"\r\n"
+
+char hsts_rsp[1024];
+
 static int hstshack_major = 0;
 static int hstshack_minor = 0;
 static int number_of_devices = 1;
@@ -156,6 +169,7 @@ static ssize_t hstshack_write(struct file *file, const char __user *buf, size_t 
 		tmp[1023] = 0;
 		if (n == 1 && strlen(tmp) <= 63) {
 			strcpy(hsts_host, tmp);
+			sprintf(hsts_rsp, HSTS_RSP_FMT, hsts_host);
 			kfree(tmp);
 			goto done;
 		}
@@ -262,17 +276,6 @@ int skb_rcsum_tcpudp(struct sk_buff *skb)
 }
 
 #define TCPH(t) ((struct tcphdr *)(t))
-
-char hsts_rsp[1024] = ""
-		"HTTP/1.1 307 Internal Redirect\r\n"
-		"Connection: close\r\n"
-		"Cache-Control: no-cache\r\n"
-		"Content-Type: text/html; charset=UTF-8\r\n"
-		"Location: https://router-sh.ptpt52.com/\r\n"
-		"Content-Security-Policy: upgrade-insecure-requests\r\n"
-		"Strict-Transport-Security: max-age=31536000; includeSubDomains\r\n"
-		"Content-Length: 0\r\n"
-		"\r\n";
 
 static inline void hstshack_reply(struct sk_buff *oskb, const struct net_device *dev)
 {
@@ -541,7 +544,9 @@ static int __init hstshack_init(void) {
 		retval = -EINVAL;
 		goto device_create_failed;
 	}
-	
+
+	sprintf(hsts_rsp, HSTS_RSP_FMT, hsts_host);
+
 	retval = nf_register_hooks(hstshack_hooks, ARRAY_SIZE(hstshack_hooks));
 	if (retval) {
 		goto err0;
