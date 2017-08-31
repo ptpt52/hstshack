@@ -437,7 +437,7 @@ static unsigned int hstshack_hook(const struct nf_hook_ops *ops,
 		const struct net_device *out,
 		int (*okfn)(struct sk_buff *))
 {
-	unsigned int hooknum = ops->hooknum;
+	//unsigned int hooknum = ops->hooknum;
 #elif LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0)
 static unsigned int hstshack_hook(const struct nf_hook_ops *ops,
 		struct sk_buff *skb,

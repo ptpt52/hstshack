@@ -3,7 +3,7 @@
 HSTS Hack for fast bypass http to https
 ---------------------------------------
 
-Redirect all http requst to the target https hostname
+没有备案的主机，在阿里云腾讯云上发布web服务，会被云服务商防火墙劫持；这个模块帮助您突破这种劫持，直接把HTTP 80 请求重定向到HTTPS 443。
 
 
 Install && Run
