@@ -38,6 +38,17 @@
 #define MODULE_NAME "hstshack"
 #define HSTSHACK_VERSION "5.0.0"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
+static inline int nf_register_hooks(struct nf_hook_ops *reg, unsigned int n)
+{
+	return nf_register_net_hooks(&init_net, reg, n);
+}
+
+static inline void nf_unregister_hooks(struct nf_hook_ops *reg, unsigned int n)
+{
+	nf_unregister_net_hooks(&init_net, reg, n);
+}
+#endif
 
 #define HSTSHACK_println(fmt, ...) \
 	do { \
