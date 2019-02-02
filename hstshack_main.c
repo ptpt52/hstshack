@@ -55,7 +55,7 @@ static inline void nf_unregister_hooks(struct nf_hook_ops *reg, unsigned int n)
 		printk(KERN_DEFAULT "{" MODULE_NAME "}:%s(): " pr_fmt(fmt) "\n", __FUNCTION__, ##__VA_ARGS__); \
 	} while (0)
 
-char hsts_host[64] = "router-sh.ptpt52.com";
+char hsts_host[64] = "";
 
 #define HSTS_RSP_FMT "" \
 		"HTTP/1.1 307 Internal Redirect\r\n" \
@@ -69,6 +69,15 @@ char hsts_host[64] = "router-sh.ptpt52.com";
 		"\r\n"
 
 char hsts_rsp[1024];
+
+#define HTTP_RSP_FMT "" \
+		"HTTP/1.1 200 OK\r\n" \
+		"Connection: close\r\n" \
+		"Cache-Control: no-cache\r\n" \
+		"Content-Type: text/html; charset=UTF-8\r\n" \
+		"Content-Length: 128\r\n" \
+		"\r\n" \
+		"<html><body><script type=\"text/javascript\">window.location.href=\"https\" + window.location.href.substr(4);</script></body></html>"
 
 static int hstshack_major = 0;
 static int hstshack_minor = 0;
@@ -180,7 +189,11 @@ static ssize_t hstshack_write(struct file *file, const char __user *buf, size_t 
 		tmp[1023] = 0;
 		if (n == 1 && strlen(tmp) <= 63) {
 			strcpy(hsts_host, tmp);
-			sprintf(hsts_rsp, HSTS_RSP_FMT, hsts_host);
+			if (tmp[0] == 0) {
+				sprintf(hsts_rsp, HTTP_RSP_FMT);
+			} else {
+				sprintf(hsts_rsp, HSTS_RSP_FMT, hsts_host);
+			}
 			kfree(tmp);
 			goto done;
 		}
@@ -556,7 +569,7 @@ static int __init hstshack_init(void) {
 		goto device_create_failed;
 	}
 
-	sprintf(hsts_rsp, HSTS_RSP_FMT, hsts_host);
+	sprintf(hsts_rsp, HTTP_RSP_FMT);
 
 	retval = nf_register_hooks(hstshack_hooks, ARRAY_SIZE(hstshack_hooks));
 	if (retval) {
