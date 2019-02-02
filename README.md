@@ -25,5 +25,9 @@ Build and run
 cd hstshack
 make
 sudo insmod ./hstshack.ko
+```
+
+By default it redirect via html javascript, if you want to redirect via hsts, please run:
+```sh
 echo hsts_host=example.com | sudo tee /dev/hstshack_ctl
 ```
