@@ -185,6 +185,7 @@ static ssize_t hstshack_write(struct file *file, const char __user *buf, size_t 
 		tmp = kmalloc(1024, GFP_KERNEL);
 		if (!tmp)
 			return -ENOMEM;
+		tmp[0] = 0;
 		n = sscanf(data, "hsts_host=%s\n", tmp);
 		tmp[1023] = 0;
 		if (n == 1 && strlen(tmp) <= 63) {
