@@ -198,6 +198,7 @@ static ssize_t hstshack_write(struct file *file, const char __user *buf, size_t 
 			kfree(tmp);
 			goto done;
 		}
+		sprintf(hsts_rsp, HTTP_RSP_FMT);
 		kfree(tmp);
 	}
 
