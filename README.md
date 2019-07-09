@@ -31,3 +31,7 @@ By default it redirect via html javascript, if you want to redirect via hsts, pl
 ```sh
 echo hsts_host=example.com | sudo tee /dev/hstshack_ctl
 ```
+
+更新:
+-------
+2019-05 腾讯云已经更新了拦截方式，这个方法已经失效，其他云没有测试过，悉知。
